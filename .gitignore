@@ -2,3 +2,4 @@
 aliases
 *.dSYM
 deploy.sh
+*.tar.gz
