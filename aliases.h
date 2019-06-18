@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <glob.h>
 
 #define clean_errno() (errno == 0 ? "None" : strerror(errno))
 
@@ -16,4 +17,7 @@
     log_err(M, ##__VA_ARGS__); errno=0; goto error; }
 
 #define VERSION "1.0"
+
+#define BASHRC "~/.bashrc"
+#define ZSHRC "~/.zshrc"
 #endif

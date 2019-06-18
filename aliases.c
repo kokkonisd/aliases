@@ -45,6 +45,9 @@ void print_aliases (char * filename)
     char * line = NULL;
     size_t len = 0;
 
+    printf("\e[33mAliases in file `%s`:\e[0m\n", filename);
+    printf("\e[33m------------------------------------------\e[0m\n");
+
     while (!feof(fp)) {
         getline(&line, &len, fp);
 
@@ -58,7 +61,21 @@ error:
 
 int main (int argc, char *argv[])
 {
-    print_aliases("/Users/kokkonisd/.zshrc");
+    glob_t globber;
+    int rc = 0;
+    int flags = 0;
+
+    flags |= GLOB_TILDE;
+    rc = glob(BASHRC, flags, NULL, &globber);
+
+    if (rc == 0) {
+        print_aliases(globber.gl_pathv[0]);
+        printf("\n");
+    }
+
+    rc = glob(ZSHRC, flags, NULL, &globber);
+    if (rc == 0)
+        print_aliases(globber.gl_pathv[0]);
 
     return 0;
 }
