@@ -19,6 +19,6 @@ aliases.o : aliases.c
 aliases.c : aliases.h
 
 clean :
-	rm -rf aliases aliases.o *.dSYM
+	rm -rf aliases aliases.o *.dSYM *.tar.gz
 
 .PHONY : all install uninstall clean
