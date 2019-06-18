@@ -79,8 +79,28 @@ int print_aliases (char * filename)
     return 0;
 
 error:
-    if (fp) fclose(fp);
     return 1;
+}
+
+
+void print_help_screen ()
+{
+    printf("\e[33mUsage: aliases [options] [files]\e[0m\n");
+    printf("\e[33m\t-v, --version: print version of aliases\e[0m\n");
+    printf("\e[33m\t-h, --help: print this help screen\e[0m\n");
+}
+
+
+int parse_opt_arg (char * arg)
+{
+    if (strcmp(arg, "-h") == 0 || strcmp(arg, "--help") == 0)
+        print_help_screen(); // Help
+    else if (strcmp(arg, "-v") == 0 || strcmp(arg, "--version") == 0)
+        printf("\e[33m[aliases] version: %s\e[0m\n", VERSION); // Version
+    else
+        return 1; // Unknown argument
+
+    return 0;
 }
 
 
@@ -90,28 +110,64 @@ int main (int argc, char *argv[])
     glob_t globber;
     // Return value for globber
     int rg = 0;
-    // Return value for print_aliases
-    int rp = 0;
     // Flags for globber
     int flags = 0;
+    // Return value for print_aliases
+    int rp = 0;
+    // Return value for optional arguments parsed
+    int ra = 0;
+    // Variable used in for loop for parsing arguments
+    int i = 0;
 
     // Initialize flags
     flags |= GLOB_TILDE;
 
-    // Try to glob ~/.bashrc
-    rg = glob(BASHRC, flags, NULL, &globber);
-    // If successful, print the aliases in the file
-    if (rg == 0) {
-        rp = print_aliases(globber.gl_pathv[0]);
-        check(rp == 0, "Parsing of file `%s` failed.", globber.gl_pathv[0]);
-    }
+    // If no arguments are given
+    if (argc == 1) {
+        // Try to glob ~/.bashrc
+        rg = glob(BASHRC, flags, NULL, &globber);
+        // If successful, print the aliases in the file
+        if (rg == 0) {
+            rp = print_aliases(globber.gl_pathv[0]);
+            check(rp == 0, "Parsing of file `%s` failed.", globber.gl_pathv[0]);
+        }
 
-    // Try to glob ~/.zshrc
-    rg = glob(ZSHRC, flags, NULL, &globber);
-    // If successful, print the aliases in the file
-    if (rg == 0) {
-        rp = print_aliases(globber.gl_pathv[0]);
-        check(rp == 0, "Parsing of file `%s` failed.", globber.gl_pathv[0]);
+        // Try to glob ~/.zshrc
+        rg = glob(ZSHRC, flags, NULL, &globber);
+        // If successful, print the aliases in the file
+        if (rg == 0) {
+            rp = print_aliases(globber.gl_pathv[0]);
+            check(rp == 0, "Parsing of file `%s` failed.", globber.gl_pathv[0]);
+        }
+    // If there are arguments to parse
+    } else {
+        // Parse optional arguments first
+        while ((ra = getopt(argc, argv, ":vh")) != -1) {
+            switch (ra) {
+                case 'v':
+                    // Print version number
+                    printf("\e[33m[aliases] version: %s\e[0m\n", VERSION);
+                    return 0;
+
+                case 'h':
+                    // Print help screen
+                    print_help_screen();
+                    return 0;
+
+                case '?':
+                default:
+                    check(0, "Unknown argument `%s`. Use `aliases -h` to get a complete list of valid arguments.", argv[optind - 1]);
+            }
+        }
+
+        // Parse file arguments
+        for (i = optind; i < argc; i++) {
+            // Skip over optional arguments that come after input files
+            if (argv[i][0] != '-') {
+                rp = print_aliases(argv[i]);
+                check(rp == 0, "Parsing of file `%s` failed.", argv[i]);
+            }
+        }
     }
 
     return 0;
