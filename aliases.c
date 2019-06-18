@@ -87,8 +87,8 @@ error:
 void print_help_screen ()
 {
     printf("\e[33mUsage: aliases [options] [files]\e[0m\n");
-    printf("\e[33m\t-v, --version: print version of aliases\e[0m\n");
-    printf("\e[33m\t-h, --help: print this help screen\e[0m\n");
+    printf("\e[33m\t-v : print version of aliases\e[0m\n");
+    printf("\e[33m\t-h : print this help screen\e[0m\n");
 }
 
 
