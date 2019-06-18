@@ -16,6 +16,26 @@ int is_alias (char * line)
     return 1;
 }
 
+void print_alias (char * line)
+{
+    int i = 6;
+
+    while (line[i] != '=') {
+        printf("%c", line[i]);
+        i++;
+    }
+
+    i++;
+
+    printf(" -> ");
+    while (i < strlen(line) - 1) {
+        printf("%c", line[i]);
+        i++;
+    }
+
+    printf("\n");
+}
+
 void print_aliases (char * filename)
 {
     FILE * fp = fopen(filename, "r");
@@ -29,7 +49,7 @@ void print_aliases (char * filename)
         getline(&line, &len, fp);
 
         if (is_alias(line))
-            printf("%s\n", line);
+            print_alias(line);
     }
 
 error:
