@@ -4,7 +4,7 @@ A simple console tool that prints all custom bash/zsh aliases.
 ---
 
 ## how to install _aliases_
-To install _aliases_, simply get the [latest version](), decompress it, `cd` into it, then run:
+To install _aliases_, simply get the [latest version](https://github.com/kokkonisd/aliases/releases/tag/v1.0), decompress it, `cd` into it, then run:
 
 ```bash
 $ make install
