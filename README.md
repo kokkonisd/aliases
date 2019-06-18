@@ -1,6 +1,8 @@
 # aliases
 A simple console tool that prints all custom bash/zsh aliases.
 
+![screenshot](https://i.imgur.com/zi8NUl6.png)
+
 ---
 
 ## how to install _aliases_
