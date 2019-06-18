@@ -83,24 +83,12 @@ error:
 }
 
 
+// Print a help screen with a complete list of valid arguments
 void print_help_screen ()
 {
     printf("\e[33mUsage: aliases [options] [files]\e[0m\n");
     printf("\e[33m\t-v, --version: print version of aliases\e[0m\n");
     printf("\e[33m\t-h, --help: print this help screen\e[0m\n");
-}
-
-
-int parse_opt_arg (char * arg)
-{
-    if (strcmp(arg, "-h") == 0 || strcmp(arg, "--help") == 0)
-        print_help_screen(); // Help
-    else if (strcmp(arg, "-v") == 0 || strcmp(arg, "--version") == 0)
-        printf("\e[33m[aliases] version: %s\e[0m\n", VERSION); // Version
-    else
-        return 1; // Unknown argument
-
-    return 0;
 }
 
 
