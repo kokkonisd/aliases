@@ -6,11 +6,12 @@
 #include <errno.h>
 #include <string.h>
 #include <glob.h>
+#include <stdbool.h>
 
 #define clean_errno() (errno == 0 ? "None" : strerror(errno))
 
 #define log_err(M, ...) fprintf(stderr,\
-        "[aliases] (%s:%s:%d: errno: %s) " M "\n", __FUNCTION__, __FILE__,\
+        "\e[91m[aliases] (%s:%s:%d: errno: %s) " M "\e[0m\n", __FUNCTION__, __FILE__,\
         __LINE__, clean_errno(), ##__VA_ARGS__)
 
 #define check(A, M, ...) if(!(A)) {\
