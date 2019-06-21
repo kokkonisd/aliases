@@ -152,14 +152,25 @@ int main (int argc, char *argv[])
         for (i = optind; i < argc; i++) {
             // Skip over optional arguments that come after input files
             if (argv[i][0] != '-') {
-                rp = print_aliases(argv[i]);
-                check(rp == 0, "Parsing of file `%s` failed.", argv[i]);
+
+                // Try to glob user-specified file
+                rg = glob(argv[i], flags, NULL, &globber);
+                // If successful, print the aliases in the file
+                if (rg == 0) {
+                    rp = print_aliases(argv[i]);
+                    check(rp == 0, "Parsing of file `%s` failed.", globber.gl_pathv[0]);
+                }
             }
         }
     }
 
+    // Free glob object
+    globfree(&globber);
+
     return 0;
 
 error:
+    // Free glob object
+    globfree(&globber);
     return 1;
 }
