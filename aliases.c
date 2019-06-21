@@ -111,7 +111,8 @@ int main (int argc, char *argv[])
     int ra = 0;
     // Variable used in for loop for parsing arguments
     int i = 0;
-    int k = 0;
+    // Current index of glob_buffer (in pathv)
+    int cur_glob_index = 0;
 
     // Initialize flags
     flags |= GLOB_TILDE;
@@ -122,19 +123,21 @@ int main (int argc, char *argv[])
         rg = glob(BASHRC, flags, NULL, &glob_buffer);
         // If successful, print the aliases in the file
         if (rg == 0) {
-            rp = print_aliases(glob_buffer.gl_pathv[k]);
-            check(rp == 0, "Parsing of file `%s` failed.", glob_buffer.gl_pathv[k]);
+            rp = print_aliases(glob_buffer.gl_pathv[cur_glob_index]);
+            check(rp == 0, "Parsing of file `%s` failed.", glob_buffer.gl_pathv[cur_glob_index]);
+            // Glob was successful, add the GLOB_APPEND to the flags so as not to
+            // overwrite previous globbed filenames
             flags |= GLOB_APPEND;
-            k++;
+            // Glob was successful, we need to increment the index
+            cur_glob_index++;
         }
 
         // Try to glob ~/.zshrc
         rg = glob(ZSHRC, flags, NULL, &glob_buffer);
         // If successful, print the aliases in the file
         if (rg == 0) {
-            rp = print_aliases(glob_buffer.gl_pathv[k]);
-            check(rp == 0, "Parsing of file `%s` failed.", glob_buffer.gl_pathv[k]);
-            k++;
+            rp = print_aliases(glob_buffer.gl_pathv[cur_glob_index]);
+            check(rp == 0, "Parsing of file `%s` failed.", glob_buffer.gl_pathv[cur_glob_index]);
         }
     // If there are arguments to parse
     } else {
@@ -161,29 +164,19 @@ int main (int argc, char *argv[])
         for (i = optind; i < argc; i++) {
             // Skip over optional arguments that come after input files
             if (argv[i][0] != '-') {
-
-                // Try to glob user-specified file
-                rg = glob(argv[i], flags, NULL, &glob_buffer);
-                // If successful, print the aliases in the file
-                if (rg == 0) {
-                    for (int j = k; j < glob_buffer.gl_pathc; j++) {
-                        rp = print_aliases(glob_buffer.gl_pathv[j]);
-                        check(rp == 0, "Parsing of file `%s` failed.", glob_buffer.gl_pathv[j]);
-                    }
-                }
-
-                k++;
+                rp = print_aliases(argv[i]);
+                check(rp == 0, "Parsing of file `%s` failed.", argv[i]);
             }
         }
     }
 
     // Free glob object
-    globfree(&glob_buffer);
+    if (glob_buffer.gl_pathc) globfree(&glob_buffer);
 
     return 0;
 
 error:
     // Free glob object
-    globfree(&glob_buffer);
+    if (glob_buffer.gl_pathc) globfree(&glob_buffer);
     return 1;
 }
