@@ -22,7 +22,7 @@
 #define check(A, M, ...) if(!(A)) {\
     log_err(M, ##__VA_ARGS__); errno=0; goto error; }
 
-#define VERSION "1.0"
+#define VERSION "1.1"
 
 #define BASHRC "~/.bashrc"
 #define ZSHRC "~/.zshrc"
