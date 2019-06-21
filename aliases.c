@@ -71,6 +71,10 @@ int print_aliases (char * filename)
         // If it's an alias, print it
         if (is_alias(line))
             print_alias_line(line);
+
+        // Free line and reset it at NULL
+        free(line);
+        line = NULL;
     }
 
     // Close the file
@@ -95,10 +99,10 @@ void print_help_screen ()
 int main (int argc, char *argv[])
 {
     // Globber object to parse file names
-    glob_t globber;
-    // Return value for globber
+    glob_t glob_buffer;
+    // Return value for glob_buffer
     int rg = 0;
-    // Flags for globber
+    // Flags for glob_buffer
     int flags = 0;
     // Return value for print_aliases
     int rp = 0;
@@ -113,19 +117,19 @@ int main (int argc, char *argv[])
     // If no arguments are given
     if (argc == 1) {
         // Try to glob ~/.bashrc
-        rg = glob(BASHRC, flags, NULL, &globber);
+        rg = glob(BASHRC, flags, NULL, &glob_buffer);
         // If successful, print the aliases in the file
         if (rg == 0) {
-            rp = print_aliases(globber.gl_pathv[0]);
-            check(rp == 0, "Parsing of file `%s` failed.", globber.gl_pathv[0]);
+            rp = print_aliases(glob_buffer.gl_pathv[0]);
+            check(rp == 0, "Parsing of file `%s` failed.", glob_buffer.gl_pathv[0]);
         }
 
         // Try to glob ~/.zshrc
-        rg = glob(ZSHRC, flags, NULL, &globber);
+        rg = glob(ZSHRC, flags, NULL, &glob_buffer);
         // If successful, print the aliases in the file
         if (rg == 0) {
-            rp = print_aliases(globber.gl_pathv[0]);
-            check(rp == 0, "Parsing of file `%s` failed.", globber.gl_pathv[0]);
+            rp = print_aliases(glob_buffer.gl_pathv[0]);
+            check(rp == 0, "Parsing of file `%s` failed.", glob_buffer.gl_pathv[0]);
         }
     // If there are arguments to parse
     } else {
@@ -154,23 +158,23 @@ int main (int argc, char *argv[])
             if (argv[i][0] != '-') {
 
                 // Try to glob user-specified file
-                rg = glob(argv[i], flags, NULL, &globber);
+                rg = glob(argv[i], flags, NULL, &glob_buffer);
                 // If successful, print the aliases in the file
                 if (rg == 0) {
                     rp = print_aliases(argv[i]);
-                    check(rp == 0, "Parsing of file `%s` failed.", globber.gl_pathv[0]);
+                    check(rp == 0, "Parsing of file `%s` failed.", glob_buffer.gl_pathv[0]);
                 }
             }
         }
     }
 
     // Free glob object
-    globfree(&globber);
+    globfree(&glob_buffer);
 
     return 0;
 
 error:
     // Free glob object
-    globfree(&globber);
+    globfree(&glob_buffer);
     return 1;
 }
