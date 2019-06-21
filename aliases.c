@@ -138,6 +138,8 @@ int main (int argc, char *argv[])
         if (rg == 0) {
             rp = print_aliases(glob_buffer.gl_pathv[cur_glob_index]);
             check(rp == 0, "Parsing of file `%s` failed.", glob_buffer.gl_pathv[cur_glob_index]);
+            // Glob was successful, we need to increment the index
+            cur_glob_index++;
         }
     // If there are arguments to parse
     } else {
@@ -171,12 +173,12 @@ int main (int argc, char *argv[])
     }
 
     // Free glob object
-    if (glob_buffer.gl_pathc) globfree(&glob_buffer);
+    if (cur_glob_index > 0) globfree(&glob_buffer);
 
     return 0;
 
 error:
     // Free glob object
-    if (glob_buffer.gl_pathc) globfree(&glob_buffer);
+    if (cur_glob_index > 0) globfree(&glob_buffer);
     return 1;
 }
