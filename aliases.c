@@ -7,10 +7,12 @@
 
 
 // Check if a given line is an alias
-bool is_alias (char * line)
+bool is_alias (const char * line)
 {
     char * temp = "alias";
     int i = 0;
+
+    if (!line) return false;
 
     // Compare "alias" and given line
     for (i = 0; i < strlen(temp); i++)
@@ -72,10 +74,9 @@ int print_aliases (char * filename)
         if (is_alias(line))
             print_alias_line(line);
 
-        // Free line and reset it at NULL
-        free(line);
-        line = NULL;
     }
+
+    free(line);
 
     // Close the file
     fclose(fp);
@@ -110,6 +111,7 @@ int main (int argc, char *argv[])
     int ra = 0;
     // Variable used in for loop for parsing arguments
     int i = 0;
+    int k = 0;
 
     // Initialize flags
     flags |= GLOB_TILDE;
@@ -120,16 +122,19 @@ int main (int argc, char *argv[])
         rg = glob(BASHRC, flags, NULL, &glob_buffer);
         // If successful, print the aliases in the file
         if (rg == 0) {
-            rp = print_aliases(glob_buffer.gl_pathv[0]);
-            check(rp == 0, "Parsing of file `%s` failed.", glob_buffer.gl_pathv[0]);
+            rp = print_aliases(glob_buffer.gl_pathv[k]);
+            check(rp == 0, "Parsing of file `%s` failed.", glob_buffer.gl_pathv[k]);
+            flags |= GLOB_APPEND;
+            k++;
         }
 
         // Try to glob ~/.zshrc
         rg = glob(ZSHRC, flags, NULL, &glob_buffer);
         // If successful, print the aliases in the file
         if (rg == 0) {
-            rp = print_aliases(glob_buffer.gl_pathv[0]);
-            check(rp == 0, "Parsing of file `%s` failed.", glob_buffer.gl_pathv[0]);
+            rp = print_aliases(glob_buffer.gl_pathv[k]);
+            check(rp == 0, "Parsing of file `%s` failed.", glob_buffer.gl_pathv[k]);
+            k++;
         }
     // If there are arguments to parse
     } else {
@@ -161,9 +166,13 @@ int main (int argc, char *argv[])
                 rg = glob(argv[i], flags, NULL, &glob_buffer);
                 // If successful, print the aliases in the file
                 if (rg == 0) {
-                    rp = print_aliases(argv[i]);
-                    check(rp == 0, "Parsing of file `%s` failed.", glob_buffer.gl_pathv[0]);
+                    for (int j = k; j < glob_buffer.gl_pathc; j++) {
+                        rp = print_aliases(glob_buffer.gl_pathv[j]);
+                        check(rp == 0, "Parsing of file `%s` failed.", glob_buffer.gl_pathv[j]);
+                    }
                 }
+
+                k++;
             }
         }
     }
