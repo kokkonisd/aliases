@@ -36,7 +36,7 @@ bool is_function (const char * line)
 
     check(line, "Line pointer is NULL.");
     // Compile function regex
-    reti = regcomp(&regex, "^.+[ \\t]*\\(.*\\)[ \\t]*{", REG_ENHANCED | REG_EXTENDED);
+    reti = regcomp(&regex, "^.+[ \\t]*\\(.*\\)[ \\t]*\\{", REG_EXTENDED);
     check(reti == 0, "Couldn't compile function regex.");
     // Look for regex in line
     reti = regexec(&regex, line, 0, NULL, 0);
