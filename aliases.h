@@ -13,6 +13,7 @@
 #include <glob.h>
 #include <stdbool.h>
 #include <unistd.h>
+#include <regex.h>
 
 #define clean_errno() (errno == 0 ? "None" : strerror(errno))
 
@@ -22,7 +23,7 @@
 #define check(A, M, ...) if(!(A)) {\
     log_err(M, ##__VA_ARGS__); errno=0; goto error; }
 
-#define VERSION "1.1"
+#define VERSION "1.2"
 
 #define BASHRC "~/.bashrc"
 #define ZSHRC "~/.zshrc"
