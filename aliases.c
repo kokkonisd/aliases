@@ -6,6 +6,56 @@
 #include "aliases.h"
 
 
+int update (void)
+{
+    // File pointer to read output of popen() (to get latest version)
+    FILE *fp;
+    // Character array to store the latest version number
+    char latest_version[6];
+    // Return value of the system() call
+    int ret = 0;
+
+    printf("\e[33mChecking for updates...\e[0m\n");
+
+    // Try to get the latest version via curl
+    fp = popen(LATEST_VERSION, "r");
+    // Check if popen() call was successful
+    check(fp, "Couldn't get latest version. Check your internet connection.");
+    // Get the latest version number
+    fgets(latest_version, 6, fp);
+    // Check that the version number is valid
+    check(strlen(latest_version), "Couldn't get latest version. Check your internet connection.");
+
+    if (strcmp(latest_version, VERSION) == 0) {
+        // Aliases is up to date
+        printf("\e[33maliases is up to date (v%s).\e[0m\n", VERSION);
+    } else if (strcmp(latest_version, VERSION) < 0) {
+        // Local version is ahead of latest stable release
+        printf("\e[33mYour version of aliases (v%s) is ahead of the latest stable release (v%s).\e[0m\n", VERSION, latest_version);
+    } else {
+        // Newer stable version found and should be installed
+        printf("\e[33mNewer stable version of aliases found: v%s\e[0m\n", latest_version);
+        printf("\e[33mDownloading and installing version v%s of aliases...\e[0m\n", latest_version);
+
+        // Launch the update command
+        ret = system(UPDATE_COMMAND);
+        // Check that the update command was successful
+        check(ret != -1, "Error downloading version v%s.", latest_version);
+
+        printf("\e[33mDone! Version v%s of aliases is now installed.\n", latest_version);
+    }
+
+    // Check that pclose() is successful
+    check(pclose(fp) != -1, "Couldn't complete update.");
+
+    return 0;
+
+error:
+    if (fp) pclose(fp);
+    return 1;
+}
+
+
 // Check if a given line is an alias
 bool is_alias (const char * line)
 {
@@ -140,6 +190,7 @@ void print_help_screen ()
 {
     printf("\e[33mUsage: aliases [options] [files]\e[0m\n");
     printf("\e[33m\t-f : include function definitions\e[0m\n");
+    printf("\e[33m\t-u : check for updates and install newer version (if available)\e[0m\n");
     printf("\e[33m\t-v : print version of aliases\e[0m\n");
     printf("\e[33m\t-h : print this help screen\e[0m\n");
 }
@@ -163,6 +214,8 @@ int main (int argc, char *argv[])
     int cur_glob_index = 0;
     // Flag to print functions or not
     bool print_functions = false;
+    // Return value for update command
+    int ru = 0;
 
     // Initialize flags
     flags |= GLOB_TILDE;
@@ -197,7 +250,7 @@ int main (int argc, char *argv[])
     // If there are arguments to parse
     } else {
         // Parse optional arguments first
-        while ((ra = getopt(argc, argv, ":vhf")) != -1) {
+        while ((ra = getopt(argc, argv, ":vhfu")) != -1) {
             switch (ra) {
                 case 'v':
                     // Print version number
@@ -213,6 +266,11 @@ int main (int argc, char *argv[])
                     // Capture functions as well
                     print_functions = true;
                     break;
+
+                case 'u':
+                    ru = update();
+                    return ru;
+
 
                 case '?':
                 default:
