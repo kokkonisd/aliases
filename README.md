@@ -33,6 +33,26 @@ $ aliases myaliases1 myaliases2
 
 and _aliases_ will print all the `alias` definitions in those files.
 
+If you also want to include _function definitions_, you can use the `-f` flag:
+
+```bash
+$ aliases -f myaliases1 myaliases2
+```
+
+It also works when specifying no file arguments (_aliases_ will look in the default files `~/.bashrc` and `~/.zshrc`):
+
+```bash
+$ aliases -f
+```
+
+To update _aliases_, you can run:
+
+```bash
+$ aliases -u
+```
+
+and it will automatically look for the latest version, compare it to the current one you're using and install a newer version if one is available.
+
 To get the version number, you can run:
 
 ```bash
