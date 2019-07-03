@@ -42,7 +42,7 @@ int update (void)
         // Check that the update command was successful
         check(ret != -1, "Error downloading version v%s.", latest_version);
 
-        printf("\e[33mDone! Version v%s of aliases is now installed.\n", latest_version);
+        printf("\e[33mDone! Version v%s of aliases is now installed.\e[0m\n", latest_version);
     }
 
     // Check that pclose() is successful
