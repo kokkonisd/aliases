@@ -40,7 +40,7 @@ int update (void)
         // Launch the update command
         ret = system(UPDATE_COMMAND);
         // Check that the update command was successful
-        check(ret != -1, "Error downloading version v%s.", latest_version);
+        check(ret == 0, "Error downloading version v%s.", latest_version);
 
         printf("\e[33mDone! Version v%s of aliases is now installed.\e[0m\n", latest_version);
     }
