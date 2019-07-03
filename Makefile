@@ -1,6 +1,5 @@
 CC = cc
 CFLAGS = -Wall -g
-VERSION = 1.0
 
 all : aliases
 
