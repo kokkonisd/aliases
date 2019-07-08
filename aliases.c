@@ -101,10 +101,14 @@ error: // Fallthrough
 
 
 // Print a single alias line
-void print_alias_line (const char * line)
+void print_alias_line (const char * line, int lineno, bool print_linenos)
 {
     // Skip over the initial "alias" part
     int i = 6;
+
+    // Print line numbers (if the user asked for them)
+    if (print_linenos)
+        printf("\e[38;5;238m %5d | \e[0m", lineno);
 
     // Print the part that comes
     // before the `=`
@@ -129,9 +133,13 @@ void print_alias_line (const char * line)
 
 
 // Print a single 'alias' function line
-void print_function_line (const char * line)
+void print_function_line (const char * line, int lineno, bool print_linenos)
 {
     int i = 0;
+
+    // Print line numbers (if the user asked for them)
+    if (print_linenos)
+        printf("\e[38;5;238m %5d | \e[0m", lineno);
 
     // Print the name of the function
     while (line[i] != ' ' && line[i] != '\t' && line[i] != '(') {
@@ -145,11 +153,13 @@ void print_function_line (const char * line)
 
 
 // Print aliases in a given filename
-int print_aliases (const char * filename, bool print_functions)
+int print_aliases (const char * filename, bool print_functions, bool print_linenos)
 {
     FILE * fp = NULL;
     char * line = NULL;
     size_t len = 0;
+    int lineno = 1;
+
     // Open file to parse aliases
     fp = fopen(filename, "r");
     // Check if file exists
@@ -166,11 +176,14 @@ int print_aliases (const char * filename, bool print_functions)
 
         // If it's an alias, print it
         if (is_alias(line))
-            print_alias_line(line);
+            print_alias_line(line, lineno, print_linenos);
 
+        // If it's a function definition (and the user has
+        // asked for it), print it
         if (print_functions && is_function(line))
-            print_function_line(line);
+            print_function_line(line, lineno, print_linenos);
 
+        lineno++;
     }
 
     free(line);
@@ -190,6 +203,7 @@ void print_help_screen ()
 {
     printf("\e[33mUsage: aliases [options] [files]\e[0m\n");
     printf("\e[33m\t-f : include function definitions\e[0m\n");
+    printf("\e[33m\t-l : show line numbers\e[0m\n");
     printf("\e[33m\t-u : check for updates and install newer version (if available)\e[0m\n");
     printf("\e[33m\t-v : print version of aliases\e[0m\n");
     printf("\e[33m\t-h : print this help screen\e[0m\n");
@@ -214,22 +228,55 @@ int main (int argc, char *argv[])
     int cur_glob_index = 0;
     // Flag to print functions or not
     bool print_functions = false;
+    // Flag to print line numbers or not
+    bool print_linenos = false;
     // Return value for update command
     int ru = 0;
 
     // Initialize flags
     flags |= GLOB_TILDE;
 
-    // If no arguments are given or if no files are given
-    // but the -f flag is present
-    if (argc == 1 || (argc == 2 && strcmp(argv[1], "-f") == 0)) {
-        // Check if the -f flag is present
-        print_functions = argc == 2 && strcmp(argv[1], "-f") == 0;
+    // Parse optional arguments first
+    while ((ra = getopt(argc, argv, ":vhflu")) != -1) {
+        switch (ra) {
+            case 'v':
+                // Print version number
+                printf("\e[33m[aliases] version: %s\e[0m\n", VERSION);
+                return 0;
+
+            case 'h':
+                // Print help screen
+                print_help_screen();
+                return 0;
+
+            case 'f':
+                // Capture functions as well
+                print_functions = true;
+                break;
+
+            case 'l':
+                // Show line numbers
+                print_linenos = true;
+                break;
+
+            case 'u':
+                // Update
+                ru = update();
+                return ru;
+
+            case '?':
+            default:
+                check(0, "Unknown argument `%s`. Use `aliases -h` to get a complete list of valid arguments.", argv[optind - 1]);
+        }
+    }
+
+    // If no file arguments are given, parse ~/.bashrc and ~/.zshrc
+    if (optind > argc - 1) {
         // Try to glob ~/.bashrc
         rg = glob(BASHRC, flags, NULL, &glob_buffer);
         // If successful, print the aliases in the file
         if (rg == 0) {
-            rp = print_aliases(glob_buffer.gl_pathv[cur_glob_index], print_functions);
+            rp = print_aliases(glob_buffer.gl_pathv[cur_glob_index], print_functions, print_linenos);
             check(rp == 0, "Parsing of file `%s` failed.", glob_buffer.gl_pathv[cur_glob_index]);
             // Glob was successful, add the GLOB_APPEND to the flags so as not to
             // overwrite previous globbed filenames
@@ -242,47 +289,18 @@ int main (int argc, char *argv[])
         rg = glob(ZSHRC, flags, NULL, &glob_buffer);
         // If successful, print the aliases in the file
         if (rg == 0) {
-            rp = print_aliases(glob_buffer.gl_pathv[cur_glob_index], print_functions);
+            rp = print_aliases(glob_buffer.gl_pathv[cur_glob_index], print_functions, print_linenos);
             check(rp == 0, "Parsing of file `%s` failed.", glob_buffer.gl_pathv[cur_glob_index]);
             // Glob was successful, we need to increment the index
             cur_glob_index++;
         }
-    // If there are arguments to parse
+    // If file arguments were passed
     } else {
-        // Parse optional arguments first
-        while ((ra = getopt(argc, argv, ":vhfu")) != -1) {
-            switch (ra) {
-                case 'v':
-                    // Print version number
-                    printf("\e[33m[aliases] version: %s\e[0m\n", VERSION);
-                    return 0;
-
-                case 'h':
-                    // Print help screen
-                    print_help_screen();
-                    return 0;
-
-                case 'f':
-                    // Capture functions as well
-                    print_functions = true;
-                    break;
-
-                case 'u':
-                    ru = update();
-                    return ru;
-
-
-                case '?':
-                default:
-                    check(0, "Unknown argument `%s`. Use `aliases -h` to get a complete list of valid arguments.", argv[optind - 1]);
-            }
-        }
-
         // Parse file arguments
         for (i = optind; i < argc; i++) {
             // Skip over optional arguments that come after input files
             if (argv[i][0] != '-') {
-                rp = print_aliases(argv[i], print_functions);
+                rp = print_aliases(argv[i], print_functions, print_linenos);
                 check(rp == 0, "Parsing of file `%s` failed.", argv[i]);
             }
         }
