@@ -1,13 +1,14 @@
 CC = cc
 CFLAGS = -Wall -g
+PREFIX ?= /usr/local/bin
 
 all : aliases
 
 install : aliases
-	cp aliases /usr/local/bin/
+	install aliases $(PREFIX)/aliases
 
 uninstall :
-	rm -f /usr/local/bin/aliases
+	rm -f $(PREFIX)/aliases
 
 aliases : aliases.o
 	$(CC) $(CFLAGS) aliases.o -o aliases
