@@ -14,7 +14,6 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include <regex.h>
-#include <curl/curl.h>
 
 #define clean_errno() (errno == 0 ? "None" : strerror(errno))
 
