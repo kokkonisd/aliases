@@ -224,7 +224,7 @@ int main (int argc, char *argv[])
     int rp = 0;
     // Return value for optional arguments parsed
     int ra = 0;
-    // Variable used in for loop for parsing arguments
+    // Variable used in for loop for parsing base files (~/.bashrc, ~/.bash_aliases etc)
     int i = 0;
     // Current index of glob_buffer (in pathv)
     int cur_glob_index = 0;
