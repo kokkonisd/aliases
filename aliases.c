@@ -66,7 +66,7 @@ int is_alias (const char * line)
 
     check(line, "Line pointer is NULL.");
     // Compile alias regex
-    reti = regcomp(&regex, "^alias[ \\t]+.+=.+", REG_EXTENDED);
+    reti = regcomp(&regex, ALIAS_REGEX, REG_EXTENDED);
     check(reti == 0, "Couldn't compile alias regex.");
     // Look for regex in line
     reti = regexec(&regex, line, 0, NULL, 0);
@@ -88,7 +88,7 @@ int is_function (const char * line)
 
     check(line, "Line pointer is NULL.");
     // Compile function regex
-    reti = regcomp(&regex, "^.+[ \\t]*\\(.*\\)[ \\t]*\\{", REG_EXTENDED);
+    reti = regcomp(&regex, FUNCTION_REGEX, REG_EXTENDED);
     check(reti == 0, "Couldn't compile function regex.");
     // Look for regex in line
     reti = regexec(&regex, line, 0, NULL, 0);
@@ -106,8 +106,6 @@ error: // Fallthrough
 void print_alias_line (const char * line, int lineno, int print_linenos)
 {
     unsigned int i = 0;
-
-    while (line[i] != 'a') i++;
 
     // Skip over the initial "alias" part
     i += strlen(ALIAS_KEYWORD) + 1;

@@ -20,8 +20,8 @@
 
 #define check(A, M, ...) if(!(A)) { log_err(M, ##__VA_ARGS__); goto error; }
 
-#define VERSION "1.2"
-#define VERSION_WIDTH 6
+#define VERSION "1.2.1"
+
 #define LATEST_VERSION "curl -s https://github.com/kokkonisd/aliases/releases/latest | "\
                        "grep -Eo \"/tag/(.+)>\" | "\
                        "head -c 9 | "\
@@ -47,6 +47,9 @@
 
 
 #define ALIAS_KEYWORD "alias"
+
+#define ALIAS_REGEX    "^alias[ \\t]+.+=.+"
+#define FUNCTION_REGEX "^.+[ \\t]*\\(.*\\)[ \\t]*\\{"
 
 char * base_files[] = {
     "~/.bashrc",
