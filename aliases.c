@@ -59,29 +59,29 @@ error:
 
 
 // Check if a given line is an alias
-bool is_alias (const char * line)
+int is_alias (const char * line)
 {
     regex_t regex;
     int reti = 0;
 
     check(line, "Line pointer is NULL.");
     // Compile alias regex
-    reti = regcomp(&regex, "^alias.+=(.+);?$", REG_EXTENDED | REG_NEWLINE);
+    reti = regcomp(&regex, "^alias[ \\t]+.+=.+", REG_EXTENDED);
     check(reti == 0, "Couldn't compile alias regex.");
     // Look for regex in line
     reti = regexec(&regex, line, 0, NULL, 0);
     // Free the regex object
     regfree(&regex);
-    // If the regex matches, return true
-    if (reti == 0) return true;
+    // If the regex matches, return 1
+    if (reti == 0) return 1;
 
 error: // Fallthrough
     regfree(&regex);
-    return false;
+    return 0;
 }
 
 
-bool is_function (const char * line)
+int is_function (const char * line)
 {
     regex_t regex;
     int reti = 0;
@@ -93,20 +93,24 @@ bool is_function (const char * line)
     // Look for regex in line
     reti = regexec(&regex, line, 0, NULL, 0);
     regfree(&regex);
-    // If the regex matches, return true
-    if (reti == 0) return true;
+    // If the regex matches, return 1
+    if (reti == 0) return 1;
 
 error: // Fallthrough
     regfree(&regex);
-    return false;
+    return 0;
 }
 
 
 // Print a single alias line
-void print_alias_line (const char * line, int lineno, bool print_linenos)
+void print_alias_line (const char * line, int lineno, int print_linenos)
 {
+    unsigned int i = 0;
+
+    while (line[i] != 'a') i++;
+
     // Skip over the initial "alias" part
-    int i = 6;
+    i += strlen(ALIAS_KEYWORD) + 1;
 
     // Print line numbers (if the user asked for them)
     if (print_linenos)
@@ -123,6 +127,7 @@ void print_alias_line (const char * line, int lineno, bool print_linenos)
 
     // Print an arrow, then the rest of the alias
     printf(" -> ");
+    // strlen(line) - 1 to avoid printing the newline at the end
     while (i < strlen(line) - 1) {
         printf("%c", line[i]);
         i++;
@@ -133,9 +138,9 @@ void print_alias_line (const char * line, int lineno, bool print_linenos)
 
 
 // Print a single 'alias' function line
-void print_function_line (const char * line, int lineno, bool print_linenos)
+void print_function_line (const char * line, int lineno, int print_linenos)
 {
-    int i = 0;
+    unsigned int i = 0;
 
     // Print line numbers (if the user asked for them)
     if (print_linenos)
@@ -153,7 +158,7 @@ void print_function_line (const char * line, int lineno, bool print_linenos)
 
 
 // Print aliases in a given filename
-int print_aliases (const char * filename, bool print_functions, bool print_linenos)
+int print_aliases (const char * filename, int print_functions, int print_linenos)
 {
     FILE * fp = NULL;
     char * line = NULL;
@@ -226,9 +231,9 @@ int main (int argc, char *argv[])
     // Current index of glob_buffer (in pathv)
     int cur_glob_index = 0;
     // Flag to print functions or not
-    bool print_functions = false;
+    int print_functions = 0;
     // Flag to print line numbers or not
-    bool print_linenos = false;
+    int print_linenos = 0;
     // Return value for update command
     int ru = 0;
 
@@ -250,12 +255,12 @@ int main (int argc, char *argv[])
 
             case 'f':
                 // Capture functions as well
-                print_functions = true;
+                print_functions = 1;
                 break;
 
             case 'l':
                 // Show line numbers
-                print_linenos = true;
+                print_linenos = 1;
                 break;
 
             case 'u':

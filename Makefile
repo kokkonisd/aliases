@@ -1,5 +1,5 @@
 CC = cc
-CFLAGS = -Wall -g
+CFLAGS = -Wall -Wextra -g
 PREFIX ?= /usr/local/bin
 
 all : aliases

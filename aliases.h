@@ -8,10 +8,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
 #include <string.h>
 #include <glob.h>
-#include <stdbool.h>
 #include <unistd.h>
 #include <regex.h>
 
@@ -20,8 +18,7 @@
 
 #define log_err(M, ...) fprintf(stderr, "\e[31m[aliases] " M "\e[0m\n", ##__VA_ARGS__)
 
-#define check(A, M, ...) if(!(A)) {\
-    log_err(M, ##__VA_ARGS__); errno=0; goto error; }
+#define check(A, M, ...) if(!(A)) { log_err(M, ##__VA_ARGS__); goto error; }
 
 #define VERSION "1.2"
 #define VERSION_WIDTH 6
@@ -49,8 +46,7 @@
                         "rm -rf aliases-* aliases_latest*"
 
 
-#define BASHRC "~/.bashrc"
-#define ZSHRC "~/.zshrc"
+#define ALIAS_KEYWORD "alias"
 
 char * base_files[] = {
     "~/.bashrc",
