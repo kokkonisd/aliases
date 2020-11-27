@@ -15,10 +15,11 @@
 #include <unistd.h>
 #include <regex.h>
 
-#define clean_errno() (errno == 0 ? "None" : strerror(errno))
+// #define clean_errno() (errno == 0 ? "None" : strerror(errno))
 
-#define log_err(M, ...) fprintf(stderr,\
-        "\e[91m[aliases] " M "\e[0m\n", ##__VA_ARGS__)
+#define log_info(M, ...) fprintf(stdout, "\e[33m" M "\e[0m", ##__VA_ARGS__);
+
+#define log_err(M, ...) fprintf(stderr, "\e[31m[aliases] " M "\e[0m\n", ##__VA_ARGS__)
 
 #define check(A, M, ...) if(!(A)) {\
     log_err(M, ##__VA_ARGS__); errno=0; goto error; }

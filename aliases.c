@@ -15,7 +15,7 @@ int update (void)
     // Return value of the system() call
     int ret = 0;
 
-    printf("\e[33mChecking for updates...\e[0m\n");
+    log_info("Checking for updates...\n");
 
     // Try to get the latest version via curl
     fp = popen(LATEST_VERSION, "r");
@@ -28,23 +28,23 @@ int update (void)
 
     if (strcmp(latest_version, VERSION) == 0) {
         // Aliases is up to date
-        printf("\e[33maliases is up to date (v%s).\e[0m\n", VERSION);
+        log_info("aliases is up to date (v%s).\n", VERSION);
     } else if (strcmp(latest_version, VERSION) < 0) {
         // Local version is ahead of latest stable release
-        printf("\e[33mYour version of aliases (v%s) is ahead of the latest stable release (v%s).\e[0m\n",
+        log_info("Your version of aliases (v%s) is ahead of the latest stable release (v%s).\n",
                VERSION,
                latest_version);
     } else {
         // Newer stable version found and should be installed
-        printf("\e[33mNewer stable version of aliases found: v%s\e[0m\n", latest_version);
-        printf("\e[33mDownloading and installing version v%s of aliases...\e[0m\n", latest_version);
+        log_info("Newer stable version of aliases found: v%s\n", latest_version);
+        log_info("Downloading and installing version v%s of aliases...\n", latest_version);
 
         // Launch the update command
         ret = system(UPDATE_COMMAND);
         // Check that the update command was successful
         check(ret == 0, "Error downloading version v%s.", latest_version);
 
-        printf("\e[33mDone! Version v%s of aliases is now installed.\e[0m\n", latest_version);
+        log_info("Done! Version v%s of aliases is now installed.\n", latest_version);
     }
 
     // Check that pclose() is successful
@@ -166,8 +166,8 @@ int print_aliases (const char * filename, bool print_functions, bool print_linen
     check(fp != NULL, "File `%s` doesn't exist.", filename);
 
     // Print header message
-    printf("\e[33mAliases in file `%s`:\e[0m\n", filename);
-    printf("\e[33m------------------------------------------\e[0m\n");
+    log_info("Aliases in file `%s`:\n", filename);
+    log_info("------------------------------------------\n");
 
     // Read through file
     while (!feof(fp)) {
@@ -200,12 +200,12 @@ error:
 // Print a help screen with a complete list of valid arguments
 void print_help_screen ()
 {
-    printf("\e[33mUsage: aliases [options] [files]\e[0m\n");
-    printf("\e[33m\t-f : include function definitions\e[0m\n");
-    printf("\e[33m\t-l : show line numbers\e[0m\n");
-    printf("\e[33m\t-u : check for updates and install newer version (if available)\e[0m\n");
-    printf("\e[33m\t-v : print version of aliases\e[0m\n");
-    printf("\e[33m\t-h : print this help screen\e[0m\n");
+    log_info("Usage: aliases [options] [files]\n");
+    log_info("\t-f : include function definitions\n");
+    log_info("\t-l : show line numbers\n");
+    log_info("\t-u : check for updates and install newer version (if available)\n");
+    log_info("\t-v : print version of aliases\n");
+    log_info("\t-h : print this help screen\n");
 }
 
 
@@ -240,7 +240,7 @@ int main (int argc, char *argv[])
         switch (ra) {
             case 'v':
                 // Print version number
-                printf("\e[33m[aliases] version: %s\e[0m\n", VERSION);
+                log_info("[aliases] version: %s\n", VERSION);
                 return 0;
 
             case 'h':
