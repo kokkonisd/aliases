@@ -15,7 +15,6 @@
 #include <unistd.h>
 #include <regex.h>
 
-// #define clean_errno() (errno == 0 ? "None" : strerror(errno))
 
 #define log_info(M, ...) fprintf(stdout, "\e[33m" M "\e[0m", ##__VA_ARGS__);
 
