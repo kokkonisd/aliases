@@ -31,7 +31,9 @@ int update (void)
         printf("\e[33maliases is up to date (v%s).\e[0m\n", VERSION);
     } else if (strcmp(latest_version, VERSION) < 0) {
         // Local version is ahead of latest stable release
-        printf("\e[33mYour version of aliases (v%s) is ahead of the latest stable release (v%s).\e[0m\n", VERSION, latest_version);
+        printf("\e[33mYour version of aliases (v%s) is ahead of the latest stable release (v%s).\e[0m\n",
+               VERSION,
+               latest_version);
     } else {
         // Newer stable version found and should be installed
         printf("\e[33mNewer stable version of aliases found: v%s\e[0m\n", latest_version);
@@ -110,8 +112,7 @@ void print_alias_line (const char * line, int lineno, bool print_linenos)
     if (print_linenos)
         printf("\e[38;5;238m %5d | \e[0m", lineno);
 
-    // Print the part that comes
-    // before the `=`
+    // Print the part that comes before the `=`
     while (line[i] != '=') {
         printf("%c", line[i]);
         i++;
@@ -120,8 +121,7 @@ void print_alias_line (const char * line, int lineno, bool print_linenos)
     // Skip over the `=`
     i++;
 
-    // Print an arrow, then the
-    // rest of the alias
+    // Print an arrow, then the rest of the alias
     printf(" -> ");
     while (i < strlen(line) - 1) {
         printf("%c", line[i]);
@@ -178,8 +178,7 @@ int print_aliases (const char * filename, bool print_functions, bool print_linen
         if (is_alias(line))
             print_alias_line(line, lineno, print_linenos);
 
-        // If it's a function definition (and the user has
-        // asked for it), print it
+        // If it's a function definition (and the user has asked for it), print it
         if (print_functions && is_function(line))
             print_function_line(line, lineno, print_linenos);
 
@@ -266,34 +265,32 @@ int main (int argc, char *argv[])
 
             case '?':
             default:
-                check(0, "Unknown argument `%s`. Use `aliases -h` to get a complete list of valid arguments.", argv[optind - 1]);
+                check(0,
+                      "Unknown argument `%s`. Use `aliases -h` to get a complete list of valid arguments.",
+                      argv[optind - 1]);
         }
     }
 
-    // If no file arguments are given, parse ~/.bashrc and ~/.zshrc
+    // If no file arguments are given, parse the base files (~/.bashrc, ~/.bash_aliases etc)
     if (optind > argc - 1) {
-        // Try to glob ~/.bashrc
-        rg = glob(BASHRC, flags, NULL, &glob_buffer);
-        // If successful, print the aliases in the file
-        if (rg == 0) {
-            rp = print_aliases(glob_buffer.gl_pathv[cur_glob_index], print_functions, print_linenos);
-            check(rp == 0, "Parsing of file `%s` failed.", glob_buffer.gl_pathv[cur_glob_index]);
-            // Glob was successful, add the GLOB_APPEND to the flags so as not to
-            // overwrite previous globbed filenames
-            flags |= GLOB_APPEND;
-            // Glob was successful, we need to increment the index
-            cur_glob_index++;
+        i = 0;
+        while (base_files[i]) {
+            // Try to parse one of the base files
+            rg = glob(base_files[i], flags, NULL, &glob_buffer);
+            // If successful, print the aliases in the file
+            if (rg == 0) {
+                rp = print_aliases(glob_buffer.gl_pathv[cur_glob_index], print_functions, print_linenos);
+                check(rp == 0, "Parsing of file `%s` failed.", glob_buffer.gl_pathv[cur_glob_index]);
+                // Glob was successful, add the GLOB_APPEND to the flags so as not to overwrite previous globbed
+                // filenames
+                flags |= GLOB_APPEND;
+                // Glob was successful, we need to increment the index
+                cur_glob_index++;
+            }
+
+            i++;
         }
 
-        // Try to glob ~/.zshrc
-        rg = glob(ZSHRC, flags, NULL, &glob_buffer);
-        // If successful, print the aliases in the file
-        if (rg == 0) {
-            rp = print_aliases(glob_buffer.gl_pathv[cur_glob_index], print_functions, print_linenos);
-            check(rp == 0, "Parsing of file `%s` failed.", glob_buffer.gl_pathv[cur_glob_index]);
-            // Glob was successful, we need to increment the index
-            cur_glob_index++;
-        }
     // If file arguments were passed
     } else {
         // Parse file arguments

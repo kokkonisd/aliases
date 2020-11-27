@@ -51,4 +51,13 @@
 
 #define BASHRC "~/.bashrc"
 #define ZSHRC "~/.zshrc"
+
+char * base_files[] = {
+    "~/.bashrc",
+    "~/.bash_aliases",
+    "~/.zshrc",
+    "~/.zsh_aliases",
+    NULL
+};
+
 #endif
