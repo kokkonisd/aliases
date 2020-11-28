@@ -40,7 +40,7 @@ build:
 	@mkdir -p $(BUILD_DIR)
 
 clean:
-	rm -r $(BUILD_DIR)/
+	rm -rf $(BUILD_DIR)/
 
 .PHONY : all install uninstall build clean
 

@@ -5,7 +5,7 @@
 
 #include "aliases.h"
 
-#define SOURCE_VERSION "1.2.4" /**< The current version of `aliases` (to check along HEADER_VERSION). */
+#define SOURCE_VERSION "1.2.5" /**< The current version of `aliases` (to check along HEADER_VERSION). */
 
 /**
  * @brief      Updates the program (by downloading and installing a newer version, if one is avalaible).
@@ -27,6 +27,7 @@ int update (void)
     // Return pointer for the fgets() call
     char * rp = NULL;
 
+    printf("%s\n", UPDATE_CMD);
     log_info("Checking for updates...\n");
 
     // Try to get the latest version via curl
@@ -352,7 +353,7 @@ int main (int argc, char *argv[])
                 // Update
                 ru = update();
                 check(ru == 1, "Failed to update.");
-                break;
+                return 0;
 
             case '?':
             default:
