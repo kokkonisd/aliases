@@ -15,9 +15,9 @@ jobs:
       - name: Install dependencies
         run: sudo apt-get install valgrind curl
       - name: Make in debug mode
-        run: DEBUG=1 make && valgrind --leak-check=full --error-exitcode=1 ./aliases && make clean
+        run: DEBUG=1 make && valgrind --leak-check=full --error-exitcode=1 ./build/aliases && make clean
       - name: Make in production mode
-        run: DEBUG=0 make && valgrind --leak-check=full --error-exitcode=1 ./aliases && make clean
+        run: DEBUG=0 make && valgrind --leak-check=full --error-exitcode=1 ./build/aliases && make clean
 
   macos_build:
       runs-on: macos-latest
@@ -27,7 +27,7 @@ jobs:
       - name: Install dependencies
         run: brew install grep
       - name: Make in debug mode
-        run: DEBUG=1 make && make clean
+        run: DEBUG=1 make && ./build/aliases && make clean
       - name: Make in production mode
-        run: DEBUG=0 make && make clean
+        run: DEBUG=0 make && ./build/aliases && make clean
 
