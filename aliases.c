@@ -11,18 +11,20 @@ int update (void)
     // File pointer to read output of popen() (to get latest version)
     FILE *fp;
     // Character array to store the latest version number
-    char latest_version[6];
+    char latest_version[VERSION_WIDTH + 1];
+    latest_version[0] = '\0';
     // Return value of the system() call
     int ret = 0;
 
     log_info("Checking for updates...\n");
 
     // Try to get the latest version via curl
-    fp = popen(LATEST_VERSION, "r");
+    fp = popen(LATEST_VERSION_CMD, "r");
     // Check if popen() call was successful
     check(fp, "Couldn't get latest version. Check your internet connection.");
     // Get the latest version number
-    fgets(latest_version, 6, fp);
+    fgets(latest_version, VERSION_WIDTH, fp);
+    latest_version[VERSION_WIDTH] = '\0';
     // Check that the version number is valid
     check(strlen(latest_version), "Couldn't get latest version. Check your internet connection.");
 
@@ -40,7 +42,7 @@ int update (void)
         log_info("Downloading and installing version v%s of aliases...\n", latest_version);
 
         // Launch the update command
-        ret = system(UPDATE_COMMAND);
+        ret = system(UPDATE_CMD);
         // Check that the update command was successful
         check(ret == 0, "Error downloading version v%s.", latest_version);
 

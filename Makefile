@@ -2,6 +2,10 @@ CC = cc
 CFLAGS = -Wall -Wextra -g
 PREFIX ?= /usr/local/bin
 
+ifeq ($(shell uname -s), Darwin)
+	CFLAGS += -DMACOS
+endif
+
 all : aliases
 
 install : aliases
