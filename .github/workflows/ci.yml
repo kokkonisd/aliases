@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  - name: Ubuntu build
+    build:
+      runs-on: ubuntu-latest
+
+      steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+         run: sudo apt-get install valgrind curl
+      - name: Make in debug mode
+         run: DEBUG=1 make && valgrind --leak-check=full --error-exitcode=1 ./aliases && make clean
+      - name: Make in production mode
+         run: DEBUG=0 make && valgrind --leak-check=full --error-exitcode=1 ./aliases && make clean
+
+  - name: macOS build
+    build:
+      runs-on: macos-latest
+
+      steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+         run: pip3 install macgrind curl && brew install grep
+      - name: Make in debug mode
+         run: DEBUG=1 make && macgrind . aliases --run-before "make clean" && make clean
+      - name: Make in production mode
+         run: DEBUG=0 make && macgrind . aliases --run-before "make clean" && make clean
+
