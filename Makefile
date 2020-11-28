@@ -1,9 +1,16 @@
 CC = cc
-CFLAGS = -Wall -Wextra -g
+CFLAGS = -Wall -Wextra
 PREFIX ?= /usr/local/bin
+DEBUG ?= 1
 
 ifeq ($(shell uname -s), Darwin)
 	CFLAGS += -DMACOS
+endif
+
+ifeq (DEBUG, 1)
+	CFLAGS += -g
+else
+	CFLAGS += -O3
 endif
 
 all : aliases
