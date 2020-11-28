@@ -13,9 +13,9 @@ jobs:
       steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
-         run: apt-get install valgrind curl
+        run: apt-get install valgrind curl
       - name: Make in debug mode
-         run: DEBUG=1 make && valgrind --leak-check=full --error-exitcode=1 ./aliases && make clean
+        run: DEBUG=1 make && valgrind --leak-check=full --error-exitcode=1 ./aliases && make clean
       - name: Make in production mode
          run: DEBUG=0 make && valgrind --leak-check=full --error-exitcode=1 ./aliases && make clean
 
@@ -25,9 +25,9 @@ jobs:
       steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
-         run: pip3 install macgrind curl && brew install grep
+        run: pip3 install macgrind curl && brew install grep
       - name: Make in debug mode
-         run: DEBUG=1 make && macgrind . aliases --run-before "make clean" && make clean
+        run: DEBUG=1 make && macgrind . aliases --run-before "make clean" && make clean
       - name: Make in production mode
-         run: DEBUG=0 make && macgrind . aliases --run-before "make clean" && make clean
+        run: DEBUG=0 make && macgrind . aliases --run-before "make clean" && make clean
 
