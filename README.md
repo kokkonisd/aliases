@@ -1,4 +1,7 @@
 # aliases
+
+![CI](https://github.com/kokkonisd/aliases/workflows/CI/badge.svg?branch=master)
+
 A simple console tool that prints all custom bash/zsh aliases.
 
 ![screenshot](https://i.imgur.com/zi8NUl6.png)
