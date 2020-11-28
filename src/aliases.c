@@ -5,6 +5,7 @@
 
 #include "aliases.h"
 
+#define SOURCE_VERSION "1.2.3" /**< The current version of `aliases` (to check along HEADER_VERSION). */
 
 /**
  * @brief      Updates the program (by downloading and installing a newer version, if one is avalaible).
@@ -39,13 +40,13 @@ int update (void)
     // Check that the version number is valid
     check(strlen(latest_version), "Couldn't get the latest version (version length is invalid).");
 
-    if (strcmp(latest_version, VERSION) == 0) {
+    if (strcmp(latest_version, SOURCE_VERSION) == 0) {
         // Aliases is up to date
-        log_info("aliases is up to date (v%s).\n", VERSION);
-    } else if (strcmp(latest_version, VERSION) < 0) {
+        log_info("aliases is up to date (v%s).\n", SOURCE_VERSION);
+    } else if (strcmp(latest_version, SOURCE_VERSION) < 0) {
         // Local version is ahead of latest stable release
         log_info("Your version of aliases (v%s) is ahead of the latest stable release (v%s).\n",
-               VERSION,
+               SOURCE_VERSION,
                latest_version);
     } else {
         // Newer stable version found and should be installed
@@ -151,7 +152,7 @@ int print_alias_line (const char * line, int lineno, int print_linenos)
 
     // Print line numbers (if the user asked for them)
     if (print_linenos)
-        printf("\e[38;5;238m %5d | \e[0m", lineno);
+        log_background(" %5d | ", lineno);
 
     // Print the part that comes before the `=`
     while (line[i] != '=') {
@@ -197,7 +198,7 @@ int print_function_line (const char * line, int lineno, int print_linenos)
 
     // Print line numbers (if the user asked for them)
     if (print_linenos)
-        printf("\e[38;5;238m %5d | \e[0m", lineno);
+        log_background(" %5d | ", lineno);
 
     // Print the name of the function
     while (line[i] != ' ' && line[i] != '\t' && line[i] != '(') {
@@ -231,6 +232,7 @@ int print_aliases (const char * filename, int print_functions, int print_linenos
     size_t len = 0;
     int lineno = 1;
     int ret = 0;
+    unsigned int i = 0;
 
     // Check filename
     check(filename, "Invalid filename (filename pointer is NULL).");
@@ -242,7 +244,9 @@ int print_aliases (const char * filename, int print_functions, int print_linenos
 
     // Print header message
     log_info("Aliases in file `%s`:\n", filename);
-    log_info("------------------------------------------\n");
+    // Print '-' characters to fit the length of the print message above
+    for (i = 0; i < strlen(filename) + 20; i++) log_info("-");
+    log_info("\n");
 
     // Read through file
     while (!feof(fp)) {
@@ -315,6 +319,9 @@ int main (int argc, char *argv[])
     // Return value for update command
     int ru = 0;
 
+    check(strcmp(HEADER_VERSION, SOURCE_VERSION) == 0,
+          "Header and source versions do not match. Please reinstall `aliases`.");
+
     // Initialize flags
     flags |= GLOB_TILDE;
 
@@ -323,7 +330,7 @@ int main (int argc, char *argv[])
         switch (ra) {
             case 'v':
                 // Print version number
-                log_info("[aliases] version: %s\n", VERSION);
+                log_info("[aliases] version: %s\n", SOURCE_VERSION);
                 return 0;
 
             case 'h':

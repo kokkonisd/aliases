@@ -26,6 +26,15 @@
 #define log_info(M, ...) fprintf(stdout, "\e[33m" M "\e[0m", ##__VA_ARGS__);
 
 /**
+ * @brief      Logs a background message.
+ * This macro prints a colored "background" message to `stdout`.
+ *
+ * @param      M     A message string, containing formatting characters.
+ * @param      ...   Potential arguments to the string.
+ */
+#define log_background(M, ...) fprintf(stdout, "\e[38;5;238m" M "\e[0m", ##__VA_ARGS__);
+
+/**
  * @brief      Logs an error message.
  * 
  * This macro prints a colored error message to `stderr`.
@@ -50,8 +59,8 @@
 #define check(A, M, ...) if(!(A)) { log_err(M, ##__VA_ARGS__); goto error; }
 
 
-#define VERSION       "1.2.2" /**< The current version of `aliases`. */
-#define VERSION_WIDTH 5       /**< The version width (3 digits + 2 dots). */
+#define HEADER_VERSION "1.2.3" /**< The current version of `aliases` (to check along SOURCE_VERSION). */
+#define VERSION_WIDTH  5       /**< The version width (3 digits + 2 dots). */
 
 /**
  * Define the grep command depending on the MACOS flag, passed by the Makefile.
