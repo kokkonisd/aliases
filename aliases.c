@@ -6,6 +6,14 @@
 #include "aliases.h"
 
 
+/**
+ * @brief      Updates the program (by downloading and installing a newer version, if one is avalaible).
+ * 
+ * This function uses the `LATEST_VERSION_CMD` and `UPDATE_CMD` macros to check for the latest version, and if one is
+ * available (and is newer than the current one) it downloads it and installs it, updating `aliases`.
+ *
+ * @return     1 if successful, 0 otherwise.
+ */
 int update (void)
 {
     // File pointer to read output of popen() (to get latest version)
@@ -52,21 +60,28 @@ int update (void)
     // Check that pclose() is successful
     check(pclose(fp) != -1, "Couldn't complete update.");
 
-    return 0;
+    return 1;
 
 error:
     if (fp) pclose(fp);
-    return 1;
+    return 0;
 }
 
 
-// Check if a given line is an alias
+/**
+ * @brief      Determines whether the specified line is a bash alias.
+ *
+ * @param[in]  line  The line to check.
+ *
+ * @return     1 if the specified line is a bash alias, 0 otherwise.
+ */
 int is_alias (const char * line)
 {
     regex_t regex;
     int reti = 0;
 
-    check(line, "Line pointer is NULL.");
+    // Check line pointer
+    check(line, "Invalid line (line pointer is NULL).");
     // Compile alias regex
     reti = regcomp(&regex, ALIAS_REGEX, REG_EXTENDED);
     check(reti == 0, "Couldn't compile alias regex.");
@@ -83,12 +98,20 @@ error: // Fallthrough
 }
 
 
+/**
+ * @brief      Determines whether the specified line is a bash function.
+ *
+ * @param[in]  line  The line to check.
+ *
+ * @return     1 if the specified line is a bash function, 0 otherwise.
+ */
 int is_function (const char * line)
 {
     regex_t regex;
     int reti = 0;
 
-    check(line, "Line pointer is NULL.");
+    // Check line pointer
+    check(line, "Invalid line (line pointer is NULL).");
     // Compile function regex
     reti = regcomp(&regex, FUNCTION_REGEX, REG_EXTENDED);
     check(reti == 0, "Couldn't compile function regex.");
@@ -104,10 +127,21 @@ error: // Fallthrough
 }
 
 
-// Print a single alias line
-void print_alias_line (const char * line, int lineno, int print_linenos)
+/**
+ * @brief      Prints an alias line.
+ *
+ * @param[in]  line           The line to print.
+ * @param[in]  lineno         The line number.
+ * @param[in]  print_linenos  Flag: if 1, print line numbers, else don't.
+ *
+ * @return                    1 if successful, 0 otherwise.
+ */
+int print_alias_line (const char * line, int lineno, int print_linenos)
 {
     unsigned int i = 0;
+
+    // Check line pointer
+    check(line, "Invalid line (line pointer is NULL).");
 
     // Skip over the initial "alias" part
     i += strlen(ALIAS_KEYWORD) + 1;
@@ -134,13 +168,29 @@ void print_alias_line (const char * line, int lineno, int print_linenos)
     }
 
     printf("\n");
+
+    return 1;
+
+error:
+    return 0;
 }
 
 
-// Print a single 'alias' function line
-void print_function_line (const char * line, int lineno, int print_linenos)
+/**
+ * @brief      Prints a function line.
+ *
+ * @param[in]  line           The line to print.
+ * @param[in]  lineno         The line number.
+ * @param[in]  print_linenos  Flag: if 1, print line numbers, else don't.
+ *
+ * @return                    1 if successful, 0 otherwise.
+ */
+int print_function_line (const char * line, int lineno, int print_linenos)
 {
     unsigned int i = 0;
+
+    // Check line pointer
+    check(line, "Invalid line (line pointer is NULL).");
 
     // Print line numbers (if the user asked for them)
     if (print_linenos)
@@ -154,16 +204,33 @@ void print_function_line (const char * line, int lineno, int print_linenos)
 
     // Print an arrow, then indicate that it's a function
     printf(" -> <function () {}>\n");
+
+    return 1;
+
+error:
+    return 0;
 }
 
 
-// Print aliases in a given filename
+/**
+ * @brief      Prints aliases from a given file.
+ *
+ * @param[in]  filename         The file.
+ * @param[in]  print_functions  Flag: if 1, print functions also, else don't.
+ * @param[in]  print_linenos    Flag: if 1, print line numbers, else don't.
+ *
+ * @return     1 if successful, 0 otherwise.
+ */
 int print_aliases (const char * filename, int print_functions, int print_linenos)
 {
     FILE * fp = NULL;
     char * line = NULL;
     size_t len = 0;
     int lineno = 1;
+    int ret = 0;
+
+    // Check filename
+    check(filename, "Invalid filename (filename pointer is NULL).");
 
     // Open file to parse aliases
     fp = fopen(filename, "r");
@@ -180,12 +247,16 @@ int print_aliases (const char * filename, int print_functions, int print_linenos
         getline(&line, &len, fp);
 
         // If it's an alias, print it
-        if (is_alias(line))
-            print_alias_line(line, lineno, print_linenos);
+        if (is_alias(line)) {
+            ret = print_alias_line(line, lineno, print_linenos);
+            check(ret == 1, "Failed to print line %d.", lineno);
+        }
 
         // If it's a function definition (and the user has asked for it), print it
-        if (print_functions && is_function(line))
-            print_function_line(line, lineno, print_linenos);
+        if (print_functions && is_function(line)) {
+            ret = print_function_line(line, lineno, print_linenos);
+            check(ret == 1, "Failed to print line `%d`.", lineno);
+        }
 
         lineno++;
     }
@@ -202,7 +273,9 @@ error:
 }
 
 
-// Print a help screen with a complete list of valid arguments
+/**
+ * @brief      Prints a help screen.
+ */
 void print_help_screen ()
 {
     log_info("Usage: aliases [options] [files]\n");
@@ -266,7 +339,7 @@ int main (int argc, char *argv[])
             case 'u':
                 // Update
                 ru = update();
-                return ru;
+                check(ru == 1, "Failed to update.");
 
             case '?':
             default:
