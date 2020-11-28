@@ -16,8 +16,6 @@ int update (void)
     // Return value of the system() call
     int ret = 0;
 
-    printf("%s\n", UPDATE_CMD);
-
     log_info("Checking for updates...\n");
 
     // Try to get the latest version via curl
@@ -25,7 +23,7 @@ int update (void)
     // Check if popen() call was successful
     check(fp, "Couldn't get latest version. Check your internet connection.");
     // Get the latest version number
-    fgets(latest_version, VERSION_WIDTH, fp);
+    fgets(latest_version, VERSION_WIDTH + 1, fp);
     latest_version[VERSION_WIDTH] = '\0';
     // Check that the version number is valid
     check(strlen(latest_version), "Couldn't get latest version. Check your internet connection.");
