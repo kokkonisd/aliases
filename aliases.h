@@ -33,7 +33,7 @@
  * @param      M     A message string, containing formatting characters.
  * @param      ...   Potential arguments to the string.
  */
-#define log_err(M, ...) fprintf(stderr, "\e[31m[aliases] " M "\e[0m\n", ##__VA_ARGS__)
+#define log_err(M, ...) fprintf(stderr, "\e[31m" M "\e[0m\n", ##__VA_ARGS__)
 
 /**
  * @brief      Checks a condition and produces an error if false.

@@ -1,4 +1,4 @@
-CC = cc
+CC = gcc
 CFLAGS = -Wall -Wextra
 PREFIX ?= /usr/local/bin
 DEBUG ?= 1

@@ -345,12 +345,11 @@ int main (int argc, char *argv[])
                 // Update
                 ru = update();
                 check(ru == 1, "Failed to update.");
+                break;
 
             case '?':
             default:
-                check(0,
-                      "Unknown argument `%s`. Use `aliases -h` to get a complete list of valid arguments.",
-                      argv[optind - 1]);
+                check(0, "Unknown argument. Use `aliases -h` to get a complete list of valid arguments.");
         }
     }
 
