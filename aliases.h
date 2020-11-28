@@ -49,7 +49,7 @@
 #define check(A, M, ...) if(!(A)) { log_err(M, ##__VA_ARGS__); goto error; }
 
 
-#define VERSION       "1.2.1" /**< The current version of `aliases`. */
+#define VERSION       "1.2.2" /**< The current version of `aliases`. */
 #define VERSION_WIDTH 5       /**< The version width (3 digits + 2 dots). */
 
 #ifdef MACOS
