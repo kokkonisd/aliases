@@ -67,22 +67,15 @@
                            GREP " -oP '(?<=\"tag_name\": \"v)[0-9.]+(?=\")'"
 
 #define UPDATE_CMD         "TMPDWN=$(curl -s https://api.github.com/repos/kokkonisd/aliases/releases/latest | "\
-                           "grep \"tag_name\" | "\
-                           "awk '{"\
-                               "print \"https://github.com/kokkonisd/aliases/releases/download/\" "\
-                               "substr($2, 2, length($2)-3) "\
-                               "\"/aliases-\" "\
-                               "substr($2, 3, length($2)-4) "\
-                               "\".tar.gz\""\
-                            "}') && "\
-                            "curl -L -s $TMPDWN -o /tmp/aliases_latest.tar.gz && "\
-                            "tar xvzf /tmp/aliases_latest.tar.gz -C /tmp/ && "\
-                            "cd /tmp/aliases-* && "\
-                            "make clean && "\
-                            "make uninstall && "\
-                            "make install && "\
-                            "cd .. && "\
-                            "rm -rf aliases-* aliases_latest*"
+                           GREP " -oP '(?<=\"browser_download_url\": \").+(?=\")') &&"\
+                           "curl -L -s $TMPDWN -o /tmp/aliases_latest.tar.gz && "\
+                           "tar -xvzf /tmp/aliases_latest.tar.gz -C /tmp/ && "\
+                           "cd /tmp/aliases-* && "\
+                           "make clean && "\
+                           "make uninstall && "\
+                           "make install && "\
+                           "cd .. && "\
+                           "rm -rf aliases-* aliases_latest*"
 
 
 #define ALIAS_KEYWORD "alias"

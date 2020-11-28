@@ -16,6 +16,8 @@ int update (void)
     // Return value of the system() call
     int ret = 0;
 
+    printf("%s\n", UPDATE_CMD);
+
     log_info("Checking for updates...\n");
 
     // Try to get the latest version via curl
