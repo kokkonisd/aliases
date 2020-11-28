@@ -17,24 +17,27 @@
 int update (void)
 {
     // File pointer to read output of popen() (to get latest version)
-    FILE *fp;
+    FILE * fp;
     // Character array to store the latest version number
     char latest_version[VERSION_WIDTH + 1];
     latest_version[0] = '\0';
     // Return value of the system() call
     int ret = 0;
+    // Return pointer for the fgets() call
+    char * rp = NULL;
 
     log_info("Checking for updates...\n");
 
     // Try to get the latest version via curl
     fp = popen(LATEST_VERSION_CMD, "r");
     // Check if popen() call was successful
-    check(fp, "Couldn't get latest version. Check your internet connection.");
+    check(fp, "Couldn't get the latest version. Check your internet connection.");
     // Get the latest version number
-    fgets(latest_version, VERSION_WIDTH + 1, fp);
+    rp = fgets(latest_version, VERSION_WIDTH + 1, fp);
+    check(rp, "Couldn't get the latest version (version string copy failed).");
     latest_version[VERSION_WIDTH] = '\0';
     // Check that the version number is valid
-    check(strlen(latest_version), "Couldn't get latest version. Check your internet connection.");
+    check(strlen(latest_version), "Couldn't get the latest version (version length is invalid).");
 
     if (strcmp(latest_version, VERSION) == 0) {
         // Aliases is up to date
@@ -244,7 +247,9 @@ int print_aliases (const char * filename, int print_functions, int print_linenos
     // Read through file
     while (!feof(fp)) {
         // Get a line
-        getline(&line, &len, fp);
+        ret = getline(&line, &len, fp);
+        // getline() should only return -1 if we've hit EOF
+        check(ret != -1 || (ret == -1 && feof(fp)), "Failed to parse line %d.", lineno);
 
         // If it's an alias, print it
         if (is_alias(line)) {
