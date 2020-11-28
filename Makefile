@@ -7,7 +7,7 @@ ifeq ($(shell uname -s), Darwin)
 	CFLAGS += -DMACOS
 endif
 
-ifeq (DEBUG, 1)
+ifeq ($(DEBUG), 1)
 	CFLAGS += -g
 else
 	CFLAGS += -O3
