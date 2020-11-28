@@ -6,6 +6,7 @@
 #ifndef __aliases_h__
 #define __aliases_h__
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -52,6 +53,9 @@
 #define VERSION       "1.2.2" /**< The current version of `aliases`. */
 #define VERSION_WIDTH 5       /**< The version width (3 digits + 2 dots). */
 
+/**
+ * Define the grep command depending on the MACOS flag, passed by the Makefile.
+ */
 #ifdef MACOS
 #    define GREP "ggrep"
 #else
@@ -66,6 +70,12 @@
 #define LATEST_VERSION_CMD "curl -s https://api.github.com/repos/kokkonisd/aliases/releases/latest | "\
                            GREP " -oP '(?<=\"tag_name\": \"v)[0-9.]+(?=\")'"
 
+/**
+ * @brief      Downloads & installs the latest stable version of `aliases` from GitHub.
+ * 
+ * This command uses curl, grep, tar and make to download the latest version of `aliases` from its GitHub repo, unpack
+ * it in the /tmp/ folder, install it and clean up.
+ */
 #define UPDATE_CMD         "TMPDWN=$(curl -s https://api.github.com/repos/kokkonisd/aliases/releases/latest | "\
                            GREP " -oP '(?<=\"browser_download_url\": \").+(?=\")') &&"\
                            "curl -L -s $TMPDWN -o /tmp/aliases_latest.tar.gz && "\
@@ -78,11 +88,14 @@
                            "rm -rf aliases-* aliases_latest*"
 
 
-#define ALIAS_KEYWORD "alias"
+#define ALIAS_KEYWORD "alias" /**< The alias keyword (used to calculate the word's length as well as the regex). */
 
-#define ALIAS_REGEX    "^alias[ \\t]+.+=.+"
-#define FUNCTION_REGEX "^.+[ \\t]*\\(.*\\)[ \\t]*\\{"
+#define ALIAS_REGEX    "^" ALIAS_KEYWORD "[ \\t]+.+=.+" /**< Regex to detect bash alias definitions. */
+#define FUNCTION_REGEX "^.+[ \\t]*\\(.*\\)[ \\t]*\\{"   /**< Regex to detect bash function definitions. */
 
+/**
+ * @brief      List of base files to check in case no arguments are provided.
+ */
 char * base_files[] = {
     "~/.bashrc",
     "~/.bash_aliases",
@@ -90,5 +103,6 @@ char * base_files[] = {
     "~/.zsh_aliases",
     NULL
 };
+
 
 #endif
