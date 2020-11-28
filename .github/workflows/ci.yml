@@ -7,21 +7,19 @@ on:
     branches: [ master ]
 
 jobs:
-  - name: Ubuntu build
-    build:
+  ubuntu_build:
       runs-on: ubuntu-latest
 
       steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
-         run: sudo apt-get install valgrind curl
+         run: apt-get install valgrind curl
       - name: Make in debug mode
          run: DEBUG=1 make && valgrind --leak-check=full --error-exitcode=1 ./aliases && make clean
       - name: Make in production mode
          run: DEBUG=0 make && valgrind --leak-check=full --error-exitcode=1 ./aliases && make clean
 
-  - name: macOS build
-    build:
+  macos_build:
       runs-on: macos-latest
 
       steps:
