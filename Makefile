@@ -28,7 +28,7 @@ install: $(TARGET)
 	install $(BUILD_DIR)/$(TARGET) $(PREFIX)/$(TARGET)
 
 uninstall:
-	rm -f $(PREFIX)/$(TARGET)
+	rm -rf $(PREFIX)/$(TARGET)
 
 $(TARGET): build $(OBJECTS)
 	$(CC) $(CFLAGS) $(OBJECTS) -o $(BUILD_DIR)/$(TARGET)

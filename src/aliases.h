@@ -15,7 +15,7 @@
 #include <regex.h>
 
 
-#define HEADER_VERSION "1.2.5" /**< The current version of `aliases` (to check along SOURCE_VERSION). */
+#define HEADER_VERSION "1.2.6" /**< The current version of `aliases` (to check along SOURCE_VERSION). */
 #define VERSION_WIDTH  5       /**< The version width (3 digits + 2 dots). */
 
 /**
@@ -55,13 +55,15 @@ char * base_files[] = {
 #define UPDATE_CMD         "TMPDWN=$(curl -s https://api.github.com/repos/kokkonisd/aliases/releases/latest | "\
                            GREP " -oP '(?<=\"tarball_url\": \").+(?=\")') && "\
                            "curl -L -s $TMPDWN -o /tmp/aliases_latest.tar.gz && "\
-                           "tar -xvzf /tmp/aliases_latest.tar.gz -C /tmp/ && "\
-                           "cd /tmp/kokkonisd-aliases-* && "\
+                           "sudo rm -rf /tmp/aliases_latest/ && "\
+                           "mkdir /tmp/aliases_latest/ && "\
+                           "tar -xvzf /tmp/aliases_latest.tar.gz -C /tmp/aliases_latest/ --strip-components=1 && "\
+                           "cd /tmp/aliases_latest && "\
                            "make clean && "\
                            "sudo make uninstall && "\
                            "sudo make install && "\
                            "cd .. && "\
-                           "rm -rf kokkonisd-aliases-* aliases_latest*"
+                           "sudo rm -rf aliases_latest*"
 
 
 #define ALIAS_KEYWORD "alias" /**< The alias keyword (used to calculate the word's length as well as the regex). */
