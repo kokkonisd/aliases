@@ -13,7 +13,7 @@ jobs:
       steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
-        run: apt-get install valgrind curl
+        run: sudo apt-get install valgrind curl
       - name: Make in debug mode
         run: DEBUG=1 make && valgrind --leak-check=full --error-exitcode=1 ./aliases && make clean
       - name: Make in production mode
