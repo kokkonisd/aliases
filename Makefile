@@ -1,7 +1,16 @@
+DEBUG ?= 1
+
+TARGET = aliases
+
 CC = gcc
 CFLAGS = -Wall -Wextra
 PREFIX ?= /usr/local/bin
-DEBUG ?= 1
+
+BUILD_DIR = build
+SRC_DIR = src
+
+SOURCES = $(wildcard $(SRC_DIR)/*.c)
+OBJECTS = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SOURCES)) 
 
 ifeq ($(shell uname -s), Darwin)
 	CFLAGS += -DMACOS
@@ -13,23 +22,25 @@ else
 	CFLAGS += -O3
 endif
 
-all : aliases
+all: $(TARGET)
 
-install : aliases
-	install aliases $(PREFIX)/aliases
+install: $(TARGET)
+	install $(BUILD)/$(TARGET) $(PREFIX)/$(TARGET)
 
-uninstall :
-	rm -f $(PREFIX)/aliases
+uninstall:
+	rm -f $(PREFIX)/$(TARGET)
 
-aliases : aliases.o
-	$(CC) $(CFLAGS) aliases.o -o aliases
+$(TARGET): build $(OBJECTS)
+	$(CC) $(CFLAGS) $(OBJECTS) -o $(BUILD_DIR)/$(TARGET)
 
-aliases.o : aliases.c
-	$(CC) $(CFLAGS) -c aliases.c
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+	$(CC) $(CFLAGS) $< -c -o $@
 
-aliases.c : aliases.h
+build:
+	@mkdir -p $(BUILD_DIR)
 
-clean :
-	rm -rf aliases aliases.o *.dSYM
+clean:
+	rm -r $(BUILD_DIR)/
 
-.PHONY : all install uninstall clean
+.PHONY : all install uninstall build clean
+

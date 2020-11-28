@@ -1,5 +1,4 @@
-*.o
-aliases
-*.dSYM
+build/
 deploy.sh
-*.tar.gz
+releases/
+
