@@ -5,7 +5,7 @@
 
 #include "aliases.h"
 
-#define SOURCE_VERSION "1.2.3" /**< The current version of `aliases` (to check along HEADER_VERSION). */
+#define SOURCE_VERSION "1.2.4" /**< The current version of `aliases` (to check along HEADER_VERSION). */
 
 /**
  * @brief      Updates the program (by downloading and installing a newer version, if one is avalaible).

@@ -15,52 +15,19 @@
 #include <regex.h>
 
 
-/**
- * @brief      Logs an info message.
- * 
- * This macro prints a colored info message to `stdout`.
- *
- * @param      M     A message string, containing formatting characters.
- * @param      ...   Potential arguments to the string.
- */
-#define log_info(M, ...) fprintf(stdout, "\e[33m" M "\e[0m", ##__VA_ARGS__);
-
-/**
- * @brief      Logs a background message.
- * This macro prints a colored "background" message to `stdout`.
- *
- * @param      M     A message string, containing formatting characters.
- * @param      ...   Potential arguments to the string.
- */
-#define log_background(M, ...) fprintf(stdout, "\e[38;5;238m" M "\e[0m", ##__VA_ARGS__);
-
-/**
- * @brief      Logs an error message.
- * 
- * This macro prints a colored error message to `stderr`.
- *
- * @param      M     A message string, containing formatting characters.
- * @param      ...   Potential arguments to the string.
- */
-#define log_err(M, ...) fprintf(stderr, "\e[31m" M "\e[0m\n", ##__VA_ARGS__)
-
-/**
- * @brief      Checks a condition and produces an error if false.
- * 
- * This macro checks a condition. If the condition is false, an appropriate error message is printed, and then the
- * function jumps down to its `error` section to handle the error.
- *
- * @param      A     A condition to check.
- * @param      M     A message string, containing formatting characters.
- * @param      ...   Potential arguments to the string.
- *
- * @return     { description_of_the_return_value }
- */
-#define check(A, M, ...) if(!(A)) { log_err(M, ##__VA_ARGS__); goto error; }
-
-
-#define HEADER_VERSION "1.2.3" /**< The current version of `aliases` (to check along SOURCE_VERSION). */
+#define HEADER_VERSION "1.2.4" /**< The current version of `aliases` (to check along SOURCE_VERSION). */
 #define VERSION_WIDTH  5       /**< The version width (3 digits + 2 dots). */
+
+/**
+ * @brief      List of base files to check in case no arguments are provided.
+ */
+char * base_files[] = {
+    "~/.bashrc",
+    "~/.bash_aliases",
+    "~/.zshrc",
+    "~/.zsh_aliases",
+    NULL
+};
 
 /**
  * Define the grep command depending on the MACOS flag, passed by the Makefile.
@@ -103,15 +70,47 @@
 #define FUNCTION_REGEX "^.+[ \\t]*\\(.*\\)[ \\t]*\\{"   /**< Regex to detect bash function definitions. */
 
 /**
- * @brief      List of base files to check in case no arguments are provided.
+ * @brief      Logs an info message.
+ * 
+ * This macro prints a colored info message to `stdout`.
+ *
+ * @param      M     A message string, containing formatting characters.
+ * @param      ...   Potential arguments to the string.
  */
-char * base_files[] = {
-    "~/.bashrc",
-    "~/.bash_aliases",
-    "~/.zshrc",
-    "~/.zsh_aliases",
-    NULL
-};
+#define log_info(M, ...) fprintf(stdout, "\e[33m" M "\e[0m", ##__VA_ARGS__);
+
+/**
+ * @brief      Logs a background message.
+ * This macro prints a colored "background" message to `stdout`.
+ *
+ * @param      M     A message string, containing formatting characters.
+ * @param      ...   Potential arguments to the string.
+ */
+#define log_background(M, ...) fprintf(stdout, "\e[38;5;238m" M "\e[0m", ##__VA_ARGS__);
+
+/**
+ * @brief      Logs an error message.
+ * 
+ * This macro prints a colored error message to `stderr`.
+ *
+ * @param      M     A message string, containing formatting characters.
+ * @param      ...   Potential arguments to the string.
+ */
+#define log_err(M, ...) fprintf(stderr, "\e[31m" M "\e[0m\n", ##__VA_ARGS__)
+
+/**
+ * @brief      Checks a condition and produces an error if false.
+ * 
+ * This macro checks a condition. If the condition is false, an appropriate error message is printed, and then the
+ * function jumps down to its `error` section to handle the error.
+ *
+ * @param      A     A condition to check.
+ * @param      M     A message string, containing formatting characters.
+ * @param      ...   Potential arguments to the string.
+ *
+ * @return     { description_of_the_return_value }
+ */
+#define check(A, M, ...) if(!(A)) { log_err(M, ##__VA_ARGS__); goto error; }
 
 
 #endif

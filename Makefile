@@ -25,7 +25,7 @@ endif
 all: $(TARGET)
 
 install: $(TARGET)
-	install $(BUILD)/$(TARGET) $(PREFIX)/$(TARGET)
+	install $(BUILD_DIR)/$(TARGET) $(PREFIX)/$(TARGET)
 
 uninstall:
 	rm -f $(PREFIX)/$(TARGET)
